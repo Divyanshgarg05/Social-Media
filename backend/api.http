@@ -43,8 +43,8 @@ POST http://localhost:9080/update_profile_data HTTP/1.1
 Content-Type: application/json
 
 {
-  "token": "521554ff78a0ef740256944464d6b96e815d8faef766339eb2258fe784e3d32d",
-  "bio": "I am a software developer",
+  "token": "1c455d8b34df0f46ed2583a6c06e6cc9817bc6af83cf7394205a37ef02825f6b",
+  "bio": "My name is Neha .I am a software developer",
   "currentPost": "CTO",
   "pastWork": [
     {
