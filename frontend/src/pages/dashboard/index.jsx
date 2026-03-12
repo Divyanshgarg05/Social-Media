@@ -41,16 +41,15 @@ export default function Dashboard() {
   const [commentText, setCommentText] = useState("");
 
   const handleUpload = async () => {
-  
-  const currentFile = fileContent;  // ← capture first
-  const currentText = postContent;
-  
-  setPostContent("");   // ← reset AFTER capturing
-  setFileContent(null);
-  
-  await dispatch(createPost({ file: currentFile, body: currentText }));
-  dispatch(getAllPosts());
-};
+    const currentFile = fileContent; // ← capture first
+    const currentText = postContent;
+
+    setPostContent(""); // ← reset AFTER capturing
+    setFileContent(null);
+
+    await dispatch(createPost({ file: currentFile, body: currentText }));
+    dispatch(getAllPosts());
+  };
   useEffect(() => {
     console.log("authState.user:", authState.user);
   }, [authState.user]);
@@ -63,7 +62,7 @@ export default function Dashboard() {
               <div className={styles.createPostContainer}>
                 <img
                   className={styles.userProfile}
-                  src={authState.user.userId.profilePicture}
+                  src={authState.user.userId.profilePicture || "/default.jpg"}
                 />
                 <textarea
                   onChange={(e) => setPostContent(e.target.value)}
@@ -120,7 +119,7 @@ export default function Dashboard() {
                       <div className={styles.singleCard__profileContainer}>
                         <img
                           className={styles.userProfile}
-                          src={post.userId.profilePicture}
+                          src={post.userId.profilePicture || "/default.jpg"}
                         />
                         <div>
                           <div
@@ -284,7 +283,12 @@ export default function Dashboard() {
                           <div
                             className={styles.singleComment__profileContainer}
                           >
-                            <img src={comment.userId.profilePicture} alt="" />
+                            <img
+                              src={
+                                comment.userId.profilePicture || "/default.jpg"
+                              }
+                              alt=""
+                            />
                             <div>
                               <p
                                 style={{

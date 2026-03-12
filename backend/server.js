@@ -1,4 +1,7 @@
-import './env.js'
+// Only load .env file in local development
+if (process.env.NODE_ENV !== 'production') {
+    await import('./env.js');
+}
 
 import express from 'express';
 import cors from 'cors';
@@ -14,7 +17,7 @@ const dbUrl = process.env.MONGO_URL;
 
 app.use('/', userRoutes);
 app.use('/', postRoutes);
-app.use(express.static('uploads'));
+
 
 const start = async () => {
     await mongoose.connect(dbUrl);
