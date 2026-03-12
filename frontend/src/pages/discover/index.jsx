@@ -5,7 +5,7 @@ import { getAllPosts } from '@/config/redux/action/postAction';
 import { getAllUsers } from '@/config/redux/action/authAction';
 import { useRouter } from 'next/router';
 import {useDispatch,useSelector} from 'react-redux';
-import { BASE_URL } from '@/config';
+
 import styles from "./index.module.css";
 export default function Discoverpage() {
 
@@ -37,7 +37,7 @@ useEffect(() => {
                 router.push(`/view_profile/${user.userId.username}`)}
               } 
                 className={styles.userCard}>
-                <img className={styles.userCard__image} src={`${BASE_URL}/${user.userId.profilePicture}`} alt='profile'/>
+                <img className={styles.userCard__image} src={user.userId.profilePicture}  alt='profile'/>
                 <div className="div">
                 <h1>{user.userId.name}</h1>
                 <p>{user.userId.username}</p>

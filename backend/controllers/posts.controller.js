@@ -8,6 +8,8 @@ export const activeCheck = async (req, res) => {
 };
 
 export const createPost = async (req, res) => {
+  console.log("req.body:", req.body);
+    console.log("req.file:", req.file);
   const { token } = req.body;
 
   try {
@@ -20,7 +22,7 @@ export const createPost = async (req, res) => {
     const post = new Post({
       userId: user._id,
       body: req.body.body,
-      media: req.file != undefined ? req.file.filename : "",
+      media: req.file != undefined ? req.file.path : "",
       fileType: req.file != undefined ? req.file.mimetype.split("/")[1] : "",
     });
 

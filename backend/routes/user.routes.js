@@ -1,18 +1,8 @@
 import { Router } from "express";
-import multer from "multer";
+
 import { register ,login,uploadProfilePicture,updateUserProfile, getUserAndProfile, updateProfileData, getAllUserProfile, downloadProfile, sendConnectionRequest, getMyConnectionRequests,whatAreMyConnections,acceptConnectionRequest,getUserProfieAndUserBasedOnUsername} from "../controllers/user.controller.js";
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/');
-    },
-    filename: (req, file, cb) => {
-        cb(null,file.originalname);
-    }
-});
-
-
-const upload = multer({ storage: storage });
+import { upload } from "../config/cloudConfig.js";
 
 
 const router = Router();

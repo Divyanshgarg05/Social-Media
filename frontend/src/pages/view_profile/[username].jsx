@@ -81,7 +81,7 @@ export default function viewProfilePage({ userProfile }) {
           <div className={styles.backDropContainer}>
             <img
               className={styles.backDrop}
-              src={`${BASE_URL}/${userProfile.userId.profilePicture}`}
+             src={userProfile.userId.profilePicture}
               alt="backdrop"
             />
           </div>
@@ -143,7 +143,7 @@ export default function viewProfilePage({ userProfile }) {
                       <div className={styles.card__profileContainer}>
                         {post.media !== "" ? (
                           <img
-                            src={`${BASE_URL}/${post.media}`}
+                             src={post.media}
                             alt="post media"
                           />
                         ) : (

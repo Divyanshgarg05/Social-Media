@@ -1,24 +1,15 @@
 import { Router } from "express";
 import { activeCheck, get_comments_by_post,delete_comment_of_user,increment_likes } from "../controllers/posts.controller.js";
-import multer from "multer";
+
 import { createPost , getAllPosts,deletePost,commentPost} from "../controllers/posts.controller.js";
 import { get } from "mongoose";
-
-
+import { upload } from "../config/cloudConfig.js";
 
 const router = Router();
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/');
-    },
-    filename: (req, file, cb) => {
-        cb(null,file.originalname);
-    }
-});
 
 
-const upload = multer({ storage: storage });
+
 
 
 router.route('/').get(activeCheck);

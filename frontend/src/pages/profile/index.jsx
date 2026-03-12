@@ -4,7 +4,7 @@ import UserLayout from "@/layout/UserLayout";
 import { getAboutUser } from "@/config/redux/action/authAction";
 import { useDispatch, useSelector } from "react-redux";
 import styles from "./index.module.css";
-import { BASE_URL } from "@/config";
+
 import { getAllPosts } from "@/config/redux/action/postAction";
 import { useRouter } from "next/router";
 import { clientServer } from "@/config";
@@ -103,7 +103,7 @@ export default function ProfilePage() {
                 onChange={(e) => updateProfilePicture(e.target.files[0])}
               />
               <img
-                src={`${BASE_URL}/${userProfile.userId.profilePicture}`}
+                 src={userProfile.userId.profilePicture}
                 alt="backdrop"
               />
             </div>
@@ -166,7 +166,7 @@ export default function ProfilePage() {
                         <div className={styles.card__profileContainer}>
                           {post.media !== "" ? (
                             <img
-                              src={`${BASE_URL}/${post.media}`}
+                              src={post.media}
                               alt="post media"
                             />
                           ) : (

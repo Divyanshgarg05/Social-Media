@@ -6,13 +6,13 @@ import {
   createPost,
   deletePost,
   incrementPostLike,
-  getAllComments
+  getAllComments,
 } from "@/config/redux/action/postAction";
 import { getAboutUser, getAllUsers } from "@/config/redux/action/authAction";
 import UserLayout from "@/layout/UserLayout";
 import DashBoardLayout from "@/layout/DashboardLayout";
 import styles from "./index.module.css";
-import { BASE_URL } from "@/config";
+
 import { resetPostId } from "@/config/redux/reducer/postReducer";
 import { postComment } from "@/config/redux/action/postAction";
 
@@ -37,16 +37,20 @@ export default function Dashboard() {
   }, [authState.isTokenThere]);
 
   const [postContent, setPostContent] = useState("");
-  const [fileContent, setFileContent] = useState();
-  const [commentText,setCommentText] = useState("");
+  const [fileContent, setFileContent] = useState(null);
+  const [commentText, setCommentText] = useState("");
 
   const handleUpload = async () => {
-    await dispatch(createPost({ file: fileContent, body: postContent }));
-    setPostContent("");
-    setFileContent("");
-    dispatch(getAllPosts());
-  };
-
+  
+  const currentFile = fileContent;  // ← capture first
+  const currentText = postContent;
+  
+  setPostContent("");   // ← reset AFTER capturing
+  setFileContent(null);
+  
+  await dispatch(createPost({ file: currentFile, body: currentText }));
+  dispatch(getAllPosts());
+};
   useEffect(() => {
     console.log("authState.user:", authState.user);
   }, [authState.user]);
@@ -59,7 +63,7 @@ export default function Dashboard() {
               <div className={styles.createPostContainer}>
                 <img
                   className={styles.userProfile}
-                  src={`${BASE_URL}/${authState.user.userId.profilePicture}`}
+                  src={authState.user.userId.profilePicture}
                 />
                 <textarea
                   onChange={(e) => setPostContent(e.target.value)}
@@ -88,13 +92,22 @@ export default function Dashboard() {
                   </div>
                 </label>
                 <input
-                  onChange={(e) => setFileContent(e.target.files[0])}
+                  onChange={(e) => {
+                    console.log("File selected:", e.target.files[0]);
+                    setFileContent(e.target.files[0]);
+                  }}
                   type="file"
                   hidden
                   id="fileUpload"
                 />
                 {postContent.length > 0 && (
-                  <div onClick={handleUpload} className={styles.uploadButton}>
+                  <div
+                    onClick={() => {
+                      console.log("Post button clicked");
+                      handleUpload();
+                    }}
+                    className={styles.uploadButton}
+                  >
                     post
                   </div>
                 )}
@@ -107,7 +120,7 @@ export default function Dashboard() {
                       <div className={styles.singleCard__profileContainer}>
                         <img
                           className={styles.userProfile}
-                          src={`${BASE_URL}/${post.userId.profilePicture}`}
+                          src={post.userId.profilePicture}
                         />
                         <div>
                           <div
@@ -156,14 +169,21 @@ export default function Dashboard() {
                           <p style={{ paddingTop: "1.3rem" }}>{post.body}</p>
 
                           <div className={styles.singleCard__image}>
-                           {post.media !== "" ? <img src={`${BASE_URL}/${post.media}`} />:<></>} 
+                            {post.media !== "" ? (
+                              <img src={post.media} />
+                            ) : (
+                              <></>
+                            )}
                           </div>
 
                           <div className={styles.optionsContainer}>
-                            <div onClick={async () => {
-                              await dispatch(incrementPostLike({post_id:post._id}))
-                              dispatch(getAllPosts())
-                            }}
+                            <div
+                              onClick={async () => {
+                                await dispatch(
+                                  incrementPostLike({ post_id: post._id }),
+                                );
+                                dispatch(getAllPosts());
+                              }}
                               className={styles.singleOption__optionsContainer}
                             >
                               <svg
@@ -183,9 +203,10 @@ export default function Dashboard() {
                               <p>{post.likes}</p>
                             </div>
 
-                            <div onClick={async() => {
-                              dispatch(getAllComments({post_id:post._id}))
-                            }}
+                            <div
+                              onClick={async () => {
+                                dispatch(getAllComments({ post_id: post._id }));
+                              }}
                               className={styles.singleOption__optionsContainer}
                             >
                               <svg
@@ -204,14 +225,15 @@ export default function Dashboard() {
                               </svg>
                             </div>
 
-                            <div onClick={() => {
-                              const text = encodeURIComponent(post.body)
-                              const url = encodeURIComponent("apnacollege.in");
+                            <div
+                              onClick={() => {
+                                const text = encodeURIComponent(post.body);
+                                const url =
+                                  encodeURIComponent("apnacollege.in");
 
-                              const twitterURL = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
-                              window.open(twitterURL,"_blank")
-                              
-                            }}
+                                const twitterURL = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+                                window.open(twitterURL, "_blank");
+                              }}
                               className={styles.singleOption__optionsContainer}
                             >
                               <svg
@@ -239,60 +261,76 @@ export default function Dashboard() {
             </div>
           </div>
 
+          {postState.postId !== "" && (
+            <div
+              onClick={() => {
+                dispatch(resetPostId());
+              }}
+              className={styles.commentsContainer}
+            >
+              <div
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+                className={styles.allCommentsContainer}
+              >
+                {postState.comments.length === 0 && <h2>No comments yet </h2>}
 
-                {
-                  postState.postId !== "" && 
-                  <div onClick={() => {
-                    dispatch(resetPostId())
-                  }} className={styles.commentsContainer}>
-                    <div onClick={(e) => {
-                      e.stopPropagation()
-                    }} className={styles.allCommentsContainer}>
-
-                      {postState.comments.length ===0 && <h2>No comments yet </h2>}
-
-                      {postState.comments.length !== 0 &&
-                      <div>
-                        {postState.comments.map((comment,index) => {
-                         return (
-                         
-                          <div className={styles.singlecomment } key={comment._id}>
-                            <div className={styles.singleComment__profileContainer}>
-                              <img src={`${BASE_URL}/${comment.userId.profilePicture}`} alt=""/>
-                              <div>
-                                <p style={{fontWeight:"bold" ,fontSize:"1.2rem"}}>{comment.userId.name}</p>
-                                <p >@{comment.userId.username}</p>
-                              </div>
+                {postState.comments.length !== 0 && (
+                  <div>
+                    {postState.comments.map((comment, index) => {
+                      return (
+                        <div className={styles.singlecomment} key={comment._id}>
+                          <div
+                            className={styles.singleComment__profileContainer}
+                          >
+                            <img src={comment.userId.profilePicture} alt="" />
+                            <div>
+                              <p
+                                style={{
+                                  fontWeight: "bold",
+                                  fontSize: "1.2rem",
+                                }}
+                              >
+                                {comment.userId.name}
+                              </p>
+                              <p>@{comment.userId.username}</p>
                             </div>
-                            <p>
-                              {comment.body}
-                            </p>
                           </div>
-
-
-
-
-
-                         )
-                        })}
-                        </div>}
-
-
-                      <div className={styles.postCommentContainer}>
-                        <input type="text" placeholder="Write a comment..." value={commentText} onChange={(e) => setCommentText(e.target.value)}/>
-                        <div onClick={async () => {
-                          await dispatch(postComment({post_id:postState.postId,body:commentText}))
-                          await dispatch(getAllComments({post_id:postState.postId}))
-                        }} className={styles.postCommentContainer__commentBtn}>
-                          <p>Comment</p>
+                          <p>{comment.body}</p>
                         </div>
-                      </div>
-
-                    </div>
+                      );
+                    })}
                   </div>
+                )}
 
-                }
-
+                <div className={styles.postCommentContainer}>
+                  <input
+                    type="text"
+                    placeholder="Write a comment..."
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                  />
+                  <div
+                    onClick={async () => {
+                      await dispatch(
+                        postComment({
+                          post_id: postState.postId,
+                          body: commentText,
+                        }),
+                      );
+                      await dispatch(
+                        getAllComments({ post_id: postState.postId }),
+                      );
+                    }}
+                    className={styles.postCommentContainer__commentBtn}
+                  >
+                    <p>Comment</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </DashBoardLayout>
       </UserLayout>
     );

@@ -13,7 +13,7 @@ const convertUserDataTOPDF = async (userData) => {
   const stream = fs.createWriteStream("uploads/" + outputPath);
   doc.pipe(stream);
 
-  doc.image(`uploads/${userData.userId.profilePicture}`, {
+  doc.image(userData.userId.profilePicture, {
     align: "center",
     width: 100,
   });
@@ -116,7 +116,7 @@ export const uploadProfilePicture = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    user.profilePicture = req.file.filename;
+    user.profilePicture = req.file.path;
     await user.save();
     return res.json({ message: "Profile picture updated successfully" });
   } catch (error) {
