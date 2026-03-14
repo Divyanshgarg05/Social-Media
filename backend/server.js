@@ -16,7 +16,7 @@ app.use(cors());
 app.use(express.json());
 
 const dbUrl = process.env.MONGO_URL;
-console.log("MONGO_URL value:", dbUrl);
+
 app.use('/', userRoutes);
 app.use('/', postRoutes);
 
